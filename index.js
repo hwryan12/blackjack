@@ -17,6 +17,21 @@ let cardsEl = document.getElementById("cards-el")
 let playerEl = document.getElementById("player-el")
 let dealerCardsEl = document.getElementById("dealer-cards-el")
 let dealerSumEl = document.getElementById("dealer-sum-el")
+let playerForm = document.getElementById("player-form")
+let newPlayerBtn = document.getElementById("new-player")
+let playerContainer = document.getElementById("player-container")
+let dealerContainer = document.getElementById("dealer-container")
+let newCardBtn = document.getElementById("new-card")
+let startBtn = document.getElementById("start-game")
+
+
+playerForm.addEventListener("submit", function(event) {
+    event.preventDefault()
+    player.name = document.getElementById("player-name").value
+    player.chips = parseInt(document.getElementById("player-chips").value)
+    playerForm.style.display = "none"
+    renderGame()
+})
 
 function startGame() {
     isAlive = true
@@ -67,6 +82,23 @@ function renderGame() {
         dealerCardsEl.innerHTML += `<div class="${card.cardClass}">${card.cardUnicode}</div> `
     }
     dealerSumEl.textContent = "Dealer Sum: " + dealerSum
+    if (player.name) {
+        newPlayerBtn.style.display = "inline-block"
+    } else {
+        newPlayerBtn.style.display = "none"
+    }
+    if (player.name) {
+        playerContainer.style.display = "block"
+        dealerContainer.style.display = "block"
+        newCardBtn.style.display = "inline-block"
+        startBtn.style.display = "inline-block"
+    } else {
+        playerContainer.style.display = "none"
+        dealerContainer.style.display = "none"
+        newCardBtn.style.display = "none"
+        startBtn.style.display = "none"
+        messageEl.textContent = "Please enter your name and chips to start the game!"
+    }
 }
 
 function newCard() {
@@ -114,4 +146,15 @@ function dealerTurn() {
     while (dealerSum < 17) {
         dealCardToDealer()
     }
+}
+
+function newPlayer() {
+    playerForm.style.display = "block"
+    document.getElementById("player-name").value = ""
+    document.getElementById("player-chips").value = ""
+    player = {
+        name: "",
+        chips: 0
+    }
+    renderGame()
 }
