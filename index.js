@@ -61,30 +61,50 @@ function getRandomCard() {
     }
 }
 
-function renderGame() {
-    if (isAlive) {
-        handleBets();
-    }
-    sumEl.textContent = "Sum: " + sum;
+function renderPlayerCards() {
     cardsEl.innerHTML = "Cards: ";
     for (let i = 0; i < cards.length; i++) {
         const card = getCardUnicode(cards[i]);
         cardsEl.innerHTML += `<div class="${card.cardClass}">${card.cardUnicode}</div> `;
     }
-    playerEl.textContent = player.name + ": $" + player.chips;
-    messageEl.textContent = message;
+}
+
+function renderDealerCards() {
     dealerCardsEl.innerHTML = "Dealer Cards: ";
     for (let i = 0; i < dealerCards.length; i++) {
         const card = getCardUnicode(dealerCards[i]);
         dealerCardsEl.innerHTML += `<div class="${card.cardClass}">${card.cardUnicode}</div> `;
     }
-    dealerSumEl.textContent = "Dealer Sum: " + dealerSum;
+}
 
+function renderMessage() {
+    if (sum <= 20) {
+        message = "Do you want to draw a new card?";
+    } else if (sum === 21) {
+        message = "Wohoo! You've got Blackjack! 🥳";
+        hasBlackJack = true;
+    } else {
+        message = "You're out of the game! 😭";
+        isAlive = false;
+    }
+    messageEl.textContent = message;
+}
+
+function renderPlayerInfo() {
+    playerEl.textContent = player.name + ": $" + player.chips;
+}
+
+function renderDealerInfo() {
+    dealerSumEl.textContent = "Dealer Sum: " + dealerSum;
+}
+
+function renderButtons() {
     if (player.name) {
         newPlayerBtn.style.display = "inline-block";
     } else {
         newPlayerBtn.style.display = "none";
     }
+
     if (player.name) {
         playerContainer.style.display = "block";
         dealerContainer.style.display = "block";
@@ -99,20 +119,36 @@ function renderGame() {
     }
 }
 
+function renderGame() {
+    sumEl.textContent = "Sum: " + sum;
+    renderPlayerCards();
+    renderDealerCards();
+    renderMessage();
+    renderPlayerInfo();
+    renderDealerInfo();
+    renderButtons();
+}
+
 
 function newCard() {
     if (isAlive === true && hasBlackJack === false) {
-        let card = getRandomCard()
-        sum += card
-        cards.push(card)
-        renderGame()
-        dealerTurn()
-        renderGame()
-        if (!isAlive) {
-            dealerTurn();
-            handleBets();
-            renderGame();
+        let card = getRandomCard();
+        sum += card;
+        cards.push(card);
+        renderGame();
+        dealerTurn();
+        renderGame();
+        if (sum > 21 || hasBlackJack) {
+            endGame();
         }
+    }
+}
+
+function stand() {
+    if (isAlive && !hasBlackJack) {
+        dealerTurn();
+        renderGame();
+        endGame();
     }
 }
 
@@ -195,4 +231,9 @@ function handleBets() {
         message = "It's a draw! 🤝";
         player.chips += betAmount;
     }
+}
+
+function endGame() {
+    handleBets();
+    renderGame();
 }
